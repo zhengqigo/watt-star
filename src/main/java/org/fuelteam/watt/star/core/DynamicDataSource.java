@@ -11,10 +11,10 @@ import java.util.Stack;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.fuelteam.watt.star.properties.DruidProperties;
 import org.fuelteam.watt.star.properties.NodesProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.scheduling.annotation.Async;
 
@@ -23,8 +23,8 @@ import com.alibaba.druid.util.JdbcUtils;
 import com.google.common.collect.Maps;
 
 public class DynamicDataSource extends AbstractDataSource {
-
-    private static final Logger logger = LogManager.getLogger();
+    
+    private Logger logger = LoggerFactory.getLogger(DynamicDataSource.class);
 
     private final Dialect dialect;
 

@@ -22,8 +22,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.druid.util.StringUtils;
 import com.google.common.collect.Sets;
@@ -33,7 +33,7 @@ import com.google.common.collect.Sets;
                 RowBounds.class, ResultHandler.class }) })
 public class MyBatisSqlInterceptor implements Interceptor {
 
-    private static final Logger logger = LogManager.getLogger();
+    private Logger logger = LoggerFactory.getLogger(MyBatisSqlInterceptor.class);
 
     private Properties properties;
 

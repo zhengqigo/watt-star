@@ -13,14 +13,13 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Intercepts({
-        @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
+@Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
 public class ShardingInterceptor implements Interceptor {
 
-    private static final Logger logger = LogManager.getLogger();
+    private Logger logger = LoggerFactory.getLogger(ShardingInterceptor.class);
 
     protected static ThreadLocal<String> suffix = new ThreadLocal<String>();
 
