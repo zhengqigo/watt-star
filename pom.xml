@@ -29,7 +29,7 @@
 
         <junit.version>4.12</junit.version>
 
-        <nexus.host>106.14.212.70:8081</nexus.host>
+        <nexus.host>172.16.80.40:8081</nexus.host>
 
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     </properties>
