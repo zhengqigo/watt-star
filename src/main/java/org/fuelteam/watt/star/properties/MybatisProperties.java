@@ -5,10 +5,10 @@ import java.util.Map;
 import org.apache.ibatis.session.Configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = MybatisProperties.Prefix)
+@ConfigurationProperties(prefix = MybatisProperties.prefix)
 public class MybatisProperties {
 
-    public final static String Prefix = "spring.mybatis";
+    public final static String prefix = "spring.mybatis";
 
     private Map<String, NodesProperties> nodes;
 

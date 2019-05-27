@@ -2,7 +2,10 @@ package org.fuelteam.watt.star.core;
 
 public enum Order {
 
-    AFTER("after"), BEFORE("before");
+    // @formatter:off
+	AFTER("after"), 
+	BEFORE("before");
+    // @formatter:on
 
     private String order;
 
@@ -10,12 +13,12 @@ public enum Order {
         this.order = order;
     }
 
-    public String getOrder() {
+    @Override
+    public String toString() {
         return order;
     }
 
-    @Override
-    public String toString() {
+    public String getOrder() {
         return order;
     }
 }

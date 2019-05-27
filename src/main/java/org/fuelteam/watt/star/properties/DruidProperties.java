@@ -2,256 +2,234 @@ package org.fuelteam.watt.star.properties;
 
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-@ConfigurationProperties(DruidProperties.Prefix)
+@ConfigurationProperties(DruidProperties.druidDefault)
 public class DruidProperties {
 
-    public final static String Prefix = "spring.druid.default";
+    public final static String druidDefault = "spring.druid.default";
 
+    private String name;
+
+    private String refName;
+
+    private String dbName;
+    
     private String url;
-
+    
     private String username;
-
+    
     private String password;
-
+    
     private String driverClassName;
-
+    
     private Properties connectProperties;
-
+    
     private Integer initialSize;
-
+    
     private Integer minIdle;
-
+    
     private Integer maxActive;
-
+    
     private Long maxWait;
-
+    
     private String filters = "wall,stat";
-
+    
     private Boolean defaultAutoCommit;
-
+    
     private Long timeBetweenConnectErrorMillis;
-
+    
     private String validationQuery;
-
+    
     private Boolean testWhileIdle;
-
+    
     private Boolean testOnBorrow;
-
+    
     private Boolean testOnReturn;
-
+    
     private Boolean poolPreparedStatements;
-
+    
     private Boolean clearFiltersEnable;
-
+    
     private Boolean defaultReadOnly;
-
+    
     private Boolean asyncCloseConnectionEnable;
-
+    
     private Integer connectionErrorRetryAttempts;
-
+    
     private Boolean breakAfterAcquireFailure;
-
+    
     private Boolean dupCloseLogEnable;
-
+    
     private Boolean enable;
-
+    
     private Boolean logAbandoned;
-
+    
     private Boolean logDifferentThread;
-
+    
     private Integer loginTimeout;
-
+    
     private Boolean accessToUnderlyingConnectionAllowed;
-
+    
     private Integer maxPoolPreparedStatementPerConnectionSize;
-
+    
     private Integer queryTimeout;
-
+    
     private Boolean failFast;
-
+    
     private Integer maxCreateTaskCount;
-
+    
     private Boolean removeAbandoned;
-
+    
     private Long removeAbandonedTimeoutMillis;
-
+    
     private Integer defaultTransactionIsolation;
-
+    
     private Long timeBetweenEvictionRunsMillis;
-
+    
     private Long minEvictableIdleTimeMillis;
-
+    
     private Long maxEvictableIdleTimeMillis;
-
+    
     private Integer maxOpenPreparedStatements;
-
+    
     private Integer notFullTimeoutRetryCount;
-
+    
     private Long timeBetweenLogStatsMillis;
-
+    
     private Integer validationQueryTimeout;
 
     public DruidProperties() {}
 
-    public DruidDataSource createDataSource() throws SQLException {
+    public DruidProperties name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public DruidDataSource createDataSource(ScheduledExecutorService executorService) throws SQLException {
         DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setName(name);
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
-        dataSource.setConnectProperties(connectProperties);
-        dataSource.setInitialSize(initialSize);
-        dataSource.setMinIdle(minIdle);
-        dataSource.setMaxActive(maxActive);
-        dataSource.setMaxWait(maxWait);
-        dataSource.setFilters(filters);
-        dataSource.setDefaultAutoCommit(defaultAutoCommit);
-        dataSource.setTimeBetweenConnectErrorMillis(timeBetweenConnectErrorMillis);
-        dataSource.setValidationQuery(validationQuery);
-        dataSource.setValidationQueryTimeout(validationQueryTimeout);
-        dataSource.setTestWhileIdle(testWhileIdle);
-        dataSource.setTestOnBorrow(testOnBorrow);
-        dataSource.setTestOnReturn(testOnReturn);
-        dataSource.setPoolPreparedStatements(poolPreparedStatements);
-        dataSource.setClearFiltersEnable(clearFiltersEnable);
-        dataSource.setDefaultReadOnly(defaultReadOnly);
-        dataSource.setAsyncCloseConnectionEnable(asyncCloseConnectionEnable);
-        dataSource.setConnectionErrorRetryAttempts(connectionErrorRetryAttempts);
-        dataSource.setBreakAfterAcquireFailure(breakAfterAcquireFailure);
-        dataSource.setDupCloseLogEnable(dupCloseLogEnable);
-        dataSource.setEnable(enable);
-        dataSource.setLogAbandoned(logAbandoned);
-        dataSource.setLogDifferentThread(logDifferentThread);
-        dataSource.setLoginTimeout(loginTimeout);
-        dataSource.setAccessToUnderlyingConnectionAllowed(accessToUnderlyingConnectionAllowed);
-        dataSource.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
-        dataSource.setQueryTimeout(queryTimeout);
-        dataSource.setFailFast(failFast);
-        dataSource.setMaxCreateTaskCount(maxCreateTaskCount);
-        dataSource.setRemoveAbandoned(removeAbandoned);
-        dataSource.setRemoveAbandonedTimeoutMillis(removeAbandonedTimeoutMillis);
-        dataSource.setDefaultTransactionIsolation(defaultTransactionIsolation);
-        dataSource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        dataSource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        dataSource.setMaxEvictableIdleTimeMillis(maxEvictableIdleTimeMillis);
-        dataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
-        dataSource.setNotFullTimeoutRetryCount(notFullTimeoutRetryCount);
-        dataSource.setTimeBetweenLogStatsMillis(timeBetweenLogStatsMillis);
+        if (connectProperties != null) dataSource.setConnectProperties(connectProperties);
+        if (initialSize != null) dataSource.setInitialSize(initialSize);
+        if (minIdle != null) dataSource.setMinIdle(minIdle);
+        if (maxActive != null) dataSource.setMaxActive(maxActive);
+        if (maxWait != null) dataSource.setMaxWait(maxWait);
+        if (filters != null) dataSource.setFilters(filters);
+        if (defaultAutoCommit != null) dataSource.setDefaultAutoCommit(defaultAutoCommit);
+        if (timeBetweenConnectErrorMillis != null) dataSource.setTimeBetweenConnectErrorMillis(timeBetweenConnectErrorMillis);
+        if (StringUtils.hasText(validationQuery)) dataSource.setValidationQuery(validationQuery);
+        if (validationQueryTimeout != null) dataSource.setValidationQueryTimeout(validationQueryTimeout);
+        if (testWhileIdle != null) dataSource.setTestWhileIdle(testWhileIdle);
+        if (testOnBorrow != null) dataSource.setTestOnBorrow(testOnBorrow);
+        if (testOnReturn != null) dataSource.setTestOnReturn(testOnReturn);
+        if (poolPreparedStatements != null) dataSource.setPoolPreparedStatements(poolPreparedStatements);
+        if (clearFiltersEnable != null) dataSource.setClearFiltersEnable(clearFiltersEnable);
+        if (defaultReadOnly != null) dataSource.setDefaultReadOnly(defaultReadOnly);
+        if (asyncCloseConnectionEnable != null) dataSource.setAsyncCloseConnectionEnable(asyncCloseConnectionEnable);
+        if (connectionErrorRetryAttempts != null) dataSource.setConnectionErrorRetryAttempts(connectionErrorRetryAttempts);
+        if (breakAfterAcquireFailure != null) dataSource.setBreakAfterAcquireFailure(breakAfterAcquireFailure);
+        if (dupCloseLogEnable != null) dataSource.setDupCloseLogEnable(dupCloseLogEnable);
+        if (enable != null) dataSource.setEnable(enable);
+        if (logAbandoned != null) dataSource.setLogAbandoned(logAbandoned);
+        if (logDifferentThread != null) dataSource.setLogDifferentThread(logDifferentThread);
+        if (loginTimeout != null) dataSource.setLoginTimeout(loginTimeout);
+        if (accessToUnderlyingConnectionAllowed != null) dataSource.setAccessToUnderlyingConnectionAllowed(accessToUnderlyingConnectionAllowed);
+        if (maxPoolPreparedStatementPerConnectionSize != null) dataSource.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
+        if (queryTimeout != null) dataSource.setQueryTimeout(queryTimeout);
+        if (failFast != null) dataSource.setFailFast(failFast);
+        if (maxCreateTaskCount != null) dataSource.setMaxCreateTaskCount(maxCreateTaskCount);
+        if (removeAbandoned != null) dataSource.setRemoveAbandoned(removeAbandoned);
+        if (removeAbandonedTimeoutMillis != null) dataSource.setRemoveAbandonedTimeoutMillis(removeAbandonedTimeoutMillis);
+        if (defaultTransactionIsolation != null) dataSource.setDefaultTransactionIsolation(defaultTransactionIsolation);
+        if (timeBetweenEvictionRunsMillis != null) dataSource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        if (minEvictableIdleTimeMillis != null) dataSource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        if (maxEvictableIdleTimeMillis != null) dataSource.setMaxEvictableIdleTimeMillis(maxEvictableIdleTimeMillis);
+        if (maxOpenPreparedStatements != null) dataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
+        if (notFullTimeoutRetryCount != null) dataSource.setNotFullTimeoutRetryCount(notFullTimeoutRetryCount);
+        if (timeBetweenLogStatsMillis != null) dataSource.setTimeBetweenLogStatsMillis(timeBetweenLogStatsMillis);
+        if (executorService != null) {
+            dataSource.setDestroyScheduler(executorService);
+            dataSource.setCreateScheduler(executorService);
+        }
         return dataSource;
     }
 
     public DruidProperties defaultEmpty() {
-        this.initialSize = 5;
-        this.minIdle = 10;
-        this.maxActive = 20;
-        this.maxWait = 60000L;
-        this.timeBetweenEvictionRunsMillis = 60000L;
-        this.minEvictableIdleTimeMillis = 300000L;
-        this.validationQuery = "SELECT 0;";
-        this.validationQueryTimeout = 28000;
-        this.testWhileIdle = true;
-        this.testOnBorrow = false;
-        this.testOnReturn = false;
-        this.poolPreparedStatements = true;
-        this.maxPoolPreparedStatementPerConnectionSize = 20;
-        this.timeBetweenConnectErrorMillis = 6000L;
-        this.filters = "wall,stat";
-        this.defaultAutoCommit = true;
-        this.clearFiltersEnable = false;
-        this.defaultReadOnly = false;
-        this.asyncCloseConnectionEnable = true;
-        this.connectionErrorRetryAttempts = 3;
-        this.breakAfterAcquireFailure = false;
-        this.dupCloseLogEnable = true;
-        this.enable = true;
-        this.logAbandoned = true;
-        this.logDifferentThread = true;
-        this.loginTimeout = 5000;
-        this.accessToUnderlyingConnectionAllowed = true;
-        this.queryTimeout = 3000;
-        this.failFast = true;
-        this.maxCreateTaskCount = 4;
-        this.removeAbandoned = true;
-        this.removeAbandonedTimeoutMillis = 3600000L;
-        this.defaultTransactionIsolation = 1;
-        this.maxEvictableIdleTimeMillis = 3000000L;
-        this.maxOpenPreparedStatements = 200;
-        this.notFullTimeoutRetryCount = 500;
-        this.timeBetweenLogStatsMillis = 300000L;
-        return this;
+        DruidProperties druidProperties = new DruidProperties();
+        druidProperties.initialSize = 5;
+        druidProperties.minIdle = 10;
+        druidProperties.maxActive = 500;
+        druidProperties.validationQuery = "SELECT 0 ;";
+        druidProperties.validationQueryTimeout = 28000;
+        druidProperties.enable = true;
+        druidProperties.timeBetweenEvictionRunsMillis = 60000L;
+        druidProperties.minEvictableIdleTimeMillis = 300000L;
+        return this.merge(druidProperties);
     }
 
     public DruidProperties merge(DruidProperties druidProperties) {
         if (druidProperties == null) return this;
-
-        if (this.connectProperties == null) connectProperties = new Properties();
-        if (druidProperties.connectProperties != null) this.connectProperties.putAll(druidProperties.connectProperties);
-
-        this.url = merge(this.url, druidProperties.url);
-        this.username = merge(this.username, druidProperties.username);
-        this.password = merge(this.password, druidProperties.password);
-        this.driverClassName = merge(this.driverClassName, druidProperties.driverClassName);
-        this.initialSize = merge(this.initialSize, druidProperties.initialSize);
-        this.minIdle = merge(this.minIdle, druidProperties.minIdle);
-        this.maxActive = merge(this.maxActive, druidProperties.maxActive);
-        this.maxWait = merge(this.maxWait, druidProperties.maxWait);
-        this.filters = merge(this.filters, druidProperties.filters);
-        this.defaultAutoCommit = merge(this.defaultAutoCommit, druidProperties.defaultAutoCommit);
-        this.timeBetweenConnectErrorMillis = merge(this.timeBetweenConnectErrorMillis,
-                druidProperties.timeBetweenConnectErrorMillis);
-        this.validationQuery = merge(this.validationQuery, druidProperties.validationQuery);
-        this.testWhileIdle = merge(this.testWhileIdle, druidProperties.testWhileIdle);
-        this.testOnBorrow = merge(this.testOnBorrow, druidProperties.testOnBorrow);
-        this.testOnReturn = merge(this.testOnReturn, druidProperties.testOnReturn);
-        this.poolPreparedStatements = merge(this.poolPreparedStatements, druidProperties.poolPreparedStatements);
-        this.clearFiltersEnable = merge(this.clearFiltersEnable, druidProperties.clearFiltersEnable);
-        this.defaultReadOnly = merge(this.defaultReadOnly, druidProperties.defaultReadOnly);
-        this.asyncCloseConnectionEnable = merge(this.asyncCloseConnectionEnable,
-                druidProperties.asyncCloseConnectionEnable);
-        this.connectionErrorRetryAttempts = merge(this.connectionErrorRetryAttempts,
-                druidProperties.connectionErrorRetryAttempts);
-        this.breakAfterAcquireFailure = merge(this.breakAfterAcquireFailure, druidProperties.breakAfterAcquireFailure);
-        this.dupCloseLogEnable = merge(this.dupCloseLogEnable, druidProperties.dupCloseLogEnable);
-        this.enable = merge(this.enable, druidProperties.enable);
-        this.logAbandoned = merge(this.logAbandoned, druidProperties.logAbandoned);
-        this.logDifferentThread = merge(this.logDifferentThread, druidProperties.logDifferentThread);
-        this.loginTimeout = merge(this.loginTimeout, druidProperties.loginTimeout);
-        this.accessToUnderlyingConnectionAllowed = merge(this.accessToUnderlyingConnectionAllowed,
-                druidProperties.accessToUnderlyingConnectionAllowed);
-        this.maxPoolPreparedStatementPerConnectionSize = merge(this.maxPoolPreparedStatementPerConnectionSize,
-                druidProperties.maxPoolPreparedStatementPerConnectionSize);
-        this.queryTimeout = merge(this.queryTimeout, druidProperties.queryTimeout);
-        this.failFast = merge(this.failFast, druidProperties.failFast);
-        this.maxCreateTaskCount = merge(this.maxCreateTaskCount, druidProperties.maxCreateTaskCount);
-        this.removeAbandoned = merge(this.removeAbandoned, druidProperties.removeAbandoned);
-        this.removeAbandonedTimeoutMillis = merge(this.removeAbandonedTimeoutMillis,
-                druidProperties.removeAbandonedTimeoutMillis);
-        this.defaultTransactionIsolation = merge(this.defaultTransactionIsolation,
-                druidProperties.defaultTransactionIsolation);
-        this.timeBetweenEvictionRunsMillis = merge(this.timeBetweenEvictionRunsMillis,
-                druidProperties.timeBetweenEvictionRunsMillis);
-        this.minEvictableIdleTimeMillis = merge(this.minEvictableIdleTimeMillis,
-                druidProperties.minEvictableIdleTimeMillis);
-        this.maxEvictableIdleTimeMillis = merge(this.maxEvictableIdleTimeMillis,
-                druidProperties.maxEvictableIdleTimeMillis);
-
-        this.maxOpenPreparedStatements = merge(this.maxOpenPreparedStatements,
-                druidProperties.maxOpenPreparedStatements);
-        this.notFullTimeoutRetryCount = merge(this.notFullTimeoutRetryCount, druidProperties.notFullTimeoutRetryCount);
-        this.timeBetweenLogStatsMillis = merge(this.timeBetweenLogStatsMillis,
-                druidProperties.timeBetweenLogStatsMillis);
-        this.validationQueryTimeout = merge(this.validationQueryTimeout, druidProperties.validationQueryTimeout);
+        if (!StringUtils.hasText(this.url)) this.url = druidProperties.url;
+        if (!StringUtils.hasText(this.username)) this.username = druidProperties.username;
+        if (!StringUtils.hasText(this.password)) this.password = druidProperties.password;
+        if (!StringUtils.hasText(this.driverClassName)) this.driverClassName = druidProperties.driverClassName;
+        if (this.initialSize == null) this.initialSize = druidProperties.initialSize;
+        if (this.minIdle == null) this.minIdle = druidProperties.minIdle;
+        if (this.maxActive == null) this.maxActive = druidProperties.maxActive;
+        if (this.maxWait == null) this.maxWait = druidProperties.maxWait;
+        if (!StringUtils.hasText(this.filters)) this.filters = druidProperties.filters;
+        if (druidProperties.connectProperties != null) {
+            if (this.connectProperties == null) this.connectProperties = druidProperties.connectProperties;
+            if (this.connectProperties != null) this.connectProperties.putAll(druidProperties.connectProperties);
+        }
+        if (this.defaultAutoCommit == null) this.defaultAutoCommit = druidProperties.defaultAutoCommit;
+        if (this.timeBetweenConnectErrorMillis == null) this.timeBetweenConnectErrorMillis = druidProperties.timeBetweenConnectErrorMillis;
+        if (!StringUtils.hasText(this.validationQuery)) this.validationQuery = druidProperties.validationQuery;
+        if (this.testWhileIdle == null) this.testWhileIdle = druidProperties.testWhileIdle;
+        if (this.testOnBorrow == null) this.testOnBorrow = druidProperties.testOnBorrow;
+        if (this.testOnReturn == null) this.testOnReturn = druidProperties.testOnReturn;
+        if (this.poolPreparedStatements == null) this.poolPreparedStatements = druidProperties.poolPreparedStatements;
+        if (this.clearFiltersEnable == null) this.clearFiltersEnable = druidProperties.clearFiltersEnable;
+        if (this.asyncCloseConnectionEnable == null) this.asyncCloseConnectionEnable = druidProperties.asyncCloseConnectionEnable;
+        if (this.connectionErrorRetryAttempts == null) this.connectionErrorRetryAttempts = druidProperties.connectionErrorRetryAttempts;
+        if (this.breakAfterAcquireFailure == null) this.breakAfterAcquireFailure = druidProperties.breakAfterAcquireFailure;
+        if (this.dupCloseLogEnable == null) this.dupCloseLogEnable = druidProperties.dupCloseLogEnable;
+        if (this.enable == null) this.enable = druidProperties.enable;
+        if (this.logAbandoned == null) this.logAbandoned = druidProperties.logAbandoned;
+        if (this.logDifferentThread == null) this.logDifferentThread = druidProperties.logDifferentThread;
+        if (this.loginTimeout == null) this.loginTimeout = druidProperties.loginTimeout;
+        if (this.accessToUnderlyingConnectionAllowed == null) this.accessToUnderlyingConnectionAllowed = druidProperties.accessToUnderlyingConnectionAllowed;
+        if (this.maxPoolPreparedStatementPerConnectionSize == null) this.maxPoolPreparedStatementPerConnectionSize = druidProperties.maxPoolPreparedStatementPerConnectionSize;
+        if (this.queryTimeout == null) this.queryTimeout = druidProperties.queryTimeout;
+        if (this.maxCreateTaskCount == null) this.maxCreateTaskCount = druidProperties.maxCreateTaskCount;
+        if (this.removeAbandoned == null) this.removeAbandoned = druidProperties.removeAbandoned;
+        if (this.removeAbandonedTimeoutMillis == null) this.removeAbandonedTimeoutMillis = druidProperties.removeAbandonedTimeoutMillis;
+        if (this.defaultTransactionIsolation == null) this.defaultTransactionIsolation = druidProperties.defaultTransactionIsolation;
+        if (this.timeBetweenEvictionRunsMillis == null) this.timeBetweenEvictionRunsMillis = druidProperties.timeBetweenEvictionRunsMillis;
+        if (this.minEvictableIdleTimeMillis == null) this.minEvictableIdleTimeMillis = druidProperties.minEvictableIdleTimeMillis;
+        if (this.maxEvictableIdleTimeMillis == null) this.maxEvictableIdleTimeMillis = druidProperties.maxEvictableIdleTimeMillis;
+        if (this.maxOpenPreparedStatements == null) this.maxOpenPreparedStatements = druidProperties.maxOpenPreparedStatements;
+        if (this.notFullTimeoutRetryCount == null) this.notFullTimeoutRetryCount = druidProperties.notFullTimeoutRetryCount;
+        if (this.timeBetweenLogStatsMillis == null) this.timeBetweenLogStatsMillis = druidProperties.timeBetweenLogStatsMillis;
+        if (this.validationQueryTimeout == null) this.validationQueryTimeout = druidProperties.validationQueryTimeout;
         return this;
     }
 
-    private <T> T merge(T thisField, T mergefield) {
-        if (thisField == null && mergefield != null) return mergefield;
-        return thisField;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUrl() {
@@ -588,5 +566,21 @@ public class DruidProperties {
 
     public void setValidationQueryTimeout(Integer validationQueryTimeout) {
         this.validationQueryTimeout = validationQueryTimeout;
+    }
+
+    public String getRefName() {
+        return refName;
+    }
+
+    public void setRefName(String refName) {
+        this.refName = refName;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
     }
 }

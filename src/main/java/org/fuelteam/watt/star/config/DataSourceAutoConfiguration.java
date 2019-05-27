@@ -5,11 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.ibatis.session.Configuration;
-import org.fuelteam.watt.star.annotation.MasterSlaveAspect;
-import org.fuelteam.watt.star.core.AbstractDataBase;
-import org.fuelteam.watt.star.core.DataSourceInvalidRetry;
-import org.fuelteam.watt.star.core.Dialect;
-import org.fuelteam.watt.star.core.Mappers;
+import org.fuelteam.watt.star.core.AbstractDataBaseBean;
+import org.fuelteam.watt.star.core.Mapper;
 import org.fuelteam.watt.star.core.Order;
 import org.fuelteam.watt.star.properties.DruidProperties;
 import org.fuelteam.watt.star.properties.MybatisProperties;
@@ -20,24 +17,24 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-@EnableTransactionManagement(proxyTargetClass = true, order = Ordered.HIGHEST_PRECEDENCE)
-public class DataSourceAutoConfiguration extends AbstractDataBase
-        implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
+import io.shardingjdbc.core.constant.DatabaseType;
+import tk.mybatis.mapper.code.Style;
 
-    private ConfigurableEnvironment environment;
+@EnableTransactionManagement(proxyTargetClass = true, order = Ordered.HIGHEST_PRECEDENCE)
+public class DataSourceAutoConfiguration extends AbstractDataBaseBean implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
+
+    private Environment environment;
 
     @Override
     public void setEnvironment(Environment environment) {
-        this.environment = (ConfigurableEnvironment) environment;
+        this.environment = environment;
     }
 
     @Override
@@ -45,99 +42,70 @@ public class DataSourceAutoConfiguration extends AbstractDataBase
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        MybatisProperties druidConfig = ConfigUtil.getDruidConfig(environment, MybatisProperties.prefix, MybatisProperties.class);
 
-        MybatisProperties mybatisProperties = this.getConfig(MybatisProperties.Prefix, MybatisProperties.class);
+        DruidProperties defaultConfig = ConfigUtil.getDruidConfig(environment, DruidProperties.druidDefault,
+                DruidProperties.class);
 
-        DruidProperties druidProperties = this.getConfig(DruidProperties.Prefix, DruidProperties.class);
-
-        Map<String, NodesProperties> mapOfNodesProperties = mybatisProperties.getNodes();
-        String message = "At least one should be configured on %s.nodes";
-        if (mapOfNodesProperties == null || mapOfNodesProperties.isEmpty()) {
-            throw new RuntimeException(String.format(message, MybatisProperties.Prefix));
+        Configuration configuration = druidConfig.getConfiguration();
+        Map<String, NodesProperties> druidNodeConfigs = druidConfig.getNodes();
+        if (druidNodeConfigs == null || druidNodeConfigs.isEmpty()) {
+            String message = String.format("At least one should be configured on %s.nodes", MybatisProperties.prefix);
+            throw new RuntimeException(message);
         }
-        Iterator<Entry<String, NodesProperties>> it = this.setPrimary(mapOfNodesProperties).entrySet().iterator();
-        Configuration configuration = mybatisProperties.getConfiguration();
+        Iterator<Entry<String, NodesProperties>> it = this.setPrimary(druidNodeConfigs).entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, NodesProperties> entry = (Map.Entry<String, NodesProperties>) it.next();
-            String nodesName = entry.getKey();
-            NodesProperties nodesProperties = entry.getValue();
+            String druidNodeName = entry.getKey();
+            NodesProperties druidNodeConfig = entry.getValue();
             try {
-                Configuration config = (configuration == null) ? new Configuration()
-                        : super.cloneConfiguration(configuration);
-                this.registryBean(nodesName, nodesProperties, nodesProperties.isPrimary(), druidProperties, config,
-                        registry);
-            } catch (Throwable ex) {
-                throw new RuntimeException(ex);
+                Configuration _configuration = super.cloneConfiguration(configuration);
+                this.registryBean(druidNodeName, druidNodeConfig, defaultConfig, _configuration, registry);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
             }
         }
     }
-    
-    /**
-    private <T> T getConfig(String prefix, Class<T> clazz) {
-        PropertiesConfigurationFactory<T> factory = new PropertiesConfigurationFactory<T>(clazz);
-        factory.setPropertySources(environment.getPropertySources());
-        factory.setConversionService(environment.getConversionService());
-        factory.setIgnoreInvalidFields(false);
-        factory.setIgnoreUnknownFields(true);
-        factory.setIgnoreNestedProperties(false);
-        factory.setTargetName(prefix);
-        try {
-            factory.bindPropertiesToTarget();
-            return factory.getObject();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    */
 
-    private Map<String, NodesProperties> setPrimary(Map<String, NodesProperties> mapOfNodesProperties) {
+    private Map<String, NodesProperties> setPrimary(Map<String, NodesProperties> druidNodeConfigs) {
         int primarys = 0;
-        NodesProperties nodesProperties = null;
-        for (Entry<String, NodesProperties> entry : mapOfNodesProperties.entrySet()) {
-            NodesProperties nodes = entry.getValue();
-            if (nodes != null && nodes.isPrimary()) {
+        NodesProperties defDruidNode = null;
+        for (Entry<String, NodesProperties> entry : druidNodeConfigs.entrySet()) {
+            NodesProperties druidNode = entry.getValue();
+            if (druidNode != null && druidNode.isPrimary()) {
                 primarys++;
-                if (primarys > 1) nodes.setPrimary(false);
+                if (primarys > 1) druidNode.setPrimary(false);
             }
-            if (nodes != null && nodesProperties == null) nodesProperties = nodes;
+            if (druidNode != null && defDruidNode == null) defDruidNode = druidNode;
         }
-        if (primarys == 0 && nodesProperties != null) nodesProperties.setPrimary(true);
-        return mapOfNodesProperties;
+        if (primarys == 0 && defDruidNode != null) defDruidNode.setPrimary(true);
+        return druidNodeConfigs;
     }
 
-    private <T> T getConfig(String prefix, Class<T> clazz) {
-        T existingValue = Binder.get(environment).bind(prefix, clazz).get();
-        return existingValue;
-    }
-
-    private void registryBean(String nodeName, NodesProperties nodeProperties, boolean primary,
-            DruidProperties druidProperties, Configuration configuration, BeanDefinitionRegistry registry) {
+    private void registryBean(String druidNodeName, NodesProperties nodeProperties, DruidProperties defaultProperties,
+            Configuration configuration, BeanDefinitionRegistry registry) {
         if (nodeProperties == null) return;
+        Assert.notEmpty(nodeProperties.getDataSources(), "dataSources can not be empty");
         String mapperPackage = nodeProperties.getMapperPackage();
         String typeAliasesPackage = nodeProperties.getTypeAliasesPackage();
-        String dbType = super.getDbType(nodeProperties.getMaster(), druidProperties);
+        DatabaseType databaseType = super.getDbType(nodeProperties.getDataSources().values().iterator().next().getMaster(), defaultProperties);
         Order order = nodeProperties.getOrder();
-        Dialect dialect = nodeProperties.getDialect();
-        if (dialect == null) dialect = Dialect.of(dbType);
-        Mappers mappers = Mappers.of(dialect);
-        String basePackage = nodeProperties.getBasePackage();
-        if (StringUtils.isEmpty(basePackage)) {
-            basePackage = "";
-        }
-        String dataSourceName = nodeName + "DataSource";
-        String jdbcTemplateName = nodeName + "JdbcTemplate";
-        String transactionManagerName = nodeName;
-        String sqlSessionFactoryBeanName = nodeName + "SqlSessionFactoryBean";
-        String scannerConfigurerName = nodeName + "ScannerConfigurer";
+        Style style = nodeProperties.getStyle();
+        Mapper mappers = Mapper.valueOfDialect(databaseType);
+        String basepackage = nodeProperties.getBasePackage();
+        if (StringUtils.isEmpty(basepackage)) basepackage = "";
+        boolean primary = nodeProperties.isPrimary();
+        String dataSourceName = druidNodeName + "DataSource";
+        String jdbcTemplateName = druidNodeName + "JdbcTemplate";
+        String transactionManagerName = druidNodeName;
+        String sqlSessionFactoryBeanName = druidNodeName + "RegerSqlSessionFactoryBean";
+        String scannerConfigurerName = druidNodeName + "RegerScannerConfigurer";
 
-        AbstractBeanDefinition dataSource = super.createDataSource(nodeProperties, druidProperties, dataSourceName);
+        AbstractBeanDefinition dataSource = super.createDataSource(nodeProperties, defaultProperties, dataSourceName);
         AbstractBeanDefinition jdbcTemplate = super.createJdbcTemplate(dataSourceName);
         AbstractBeanDefinition transactionManager = super.createTransactionManager(dataSourceName);
-
-        AbstractBeanDefinition sqlSessionFactoryBean = super.createSqlSessionFactoryBean(dataSourceName, mapperPackage,
-                nodeProperties.getExecludedIds(), typeAliasesPackage, dialect, configuration);
-        AbstractBeanDefinition scannerConfigurer = super.createScannerConfigurerBean(sqlSessionFactoryBeanName,
-                basePackage, mappers, order, nodeProperties.getProperties());
+        AbstractBeanDefinition sqlSessionFactoryBean = super.createSqlSessionFactoryBean(dataSourceName, mapperPackage, typeAliasesPackage, databaseType, configuration);
+        AbstractBeanDefinition scannerConfigurer = super.createScannerConfigurerBean(sqlSessionFactoryBeanName, basepackage, mappers, order, style, nodeProperties.getProperties());
 
         dataSource.setLazyInit(true);
         dataSource.setPrimary(primary);
@@ -166,15 +134,5 @@ public class DataSourceAutoConfiguration extends AbstractDataBase
             registry.registerAlias(jdbcTemplateName, "jdbcTemplate");
             registry.registerAlias(transactionManagerName, "transactionManager");
         }
-    }
-
-    @Bean
-    public MasterSlaveAspect masterSlaveAspect() {
-        return new MasterSlaveAspect();
-    }
-
-    @Bean
-    public DataSourceInvalidRetry dataSourceInvalidRetry() {
-        return new DataSourceInvalidRetry();
     }
 }
