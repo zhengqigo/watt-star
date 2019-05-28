@@ -32,7 +32,6 @@
         <mybatis-spring.version>2.0.1</mybatis-spring.version>
         <mybatis-pagehelper.version>5.1.8</mybatis-pagehelper.version>
         <mybatis-mapper.version>4.1.5</mybatis-mapper.version>
-        <mybatis-generator.version>1.3.7</mybatis-generator.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
 
         <sharding-jdbc.version>2.0.3</sharding-jdbc.version>
@@ -104,13 +103,6 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql-connector-java.version}</version><!--$NO-MVN-MAN-VER$-->
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mybatis.generator</groupId>
-            <artifactId>mybatis-generator-core</artifactId>
-            <version>${mybatis-generator.version}</version>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
