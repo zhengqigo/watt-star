@@ -18,8 +18,8 @@ public class ConfigUtil {
     private static final Logger logger = LoggerFactory.getLogger(ConfigUtil.class);
 
     private static PropertySources getPropertySources(Environment environment) {
-        Assert.notNull(environment, "environment must not be null");
-        Assert.isInstanceOf(ConfigurableEnvironment.class, environment, "environment must be ConfigurableEnvironment");
+        Assert.notNull(environment, "environment cannot be null");
+        Assert.isInstanceOf(ConfigurableEnvironment.class, environment, "environment should be ConfigurableEnvironment");
         return ((ConfigurableEnvironment) environment).getPropertySources();
     }
 

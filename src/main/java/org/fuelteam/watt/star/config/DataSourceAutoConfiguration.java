@@ -85,7 +85,7 @@ public class DataSourceAutoConfiguration extends AbstractDataBaseBean implements
     private void registryBean(String druidNodeName, NodesProperties nodeProperties, DruidProperties defaultProperties,
             Configuration configuration, BeanDefinitionRegistry registry) {
         if (nodeProperties == null) return;
-        Assert.notEmpty(nodeProperties.getDataSources(), "dataSources can not be empty");
+        Assert.notEmpty(nodeProperties.getDataSources(), "dataSources cannot be empty");
         String mapperPackage = nodeProperties.getMapperPackage();
         String typeAliasesPackage = nodeProperties.getTypeAliasesPackage();
         DatabaseType databaseType = super.getDbType(nodeProperties.getDataSources().values().iterator().next().getMaster(), defaultProperties);
@@ -98,8 +98,8 @@ public class DataSourceAutoConfiguration extends AbstractDataBaseBean implements
         String dataSourceName = druidNodeName + "DataSource";
         String jdbcTemplateName = druidNodeName + "JdbcTemplate";
         String transactionManagerName = druidNodeName;
-        String sqlSessionFactoryBeanName = druidNodeName + "RegerSqlSessionFactoryBean";
-        String scannerConfigurerName = druidNodeName + "RegerScannerConfigurer";
+        String sqlSessionFactoryBeanName = druidNodeName + "SqlSessionFactoryBean";
+        String scannerConfigurerName = druidNodeName + "ScannerConfigurer";
 
         AbstractBeanDefinition dataSource = super.createDataSource(nodeProperties, defaultProperties, dataSourceName);
         AbstractBeanDefinition jdbcTemplate = super.createJdbcTemplate(dataSourceName);
