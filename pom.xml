@@ -27,7 +27,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <spring-boot.version>2.1.5.RELEASE</spring-boot.version>
-        
+        <guava.version>23.0</guava.version>
+
         <mybatis.version>3.5.1</mybatis.version>
         <mybatis-spring.version>2.0.1</mybatis-spring.version>
         <mybatis-pagehelper.version>5.1.8</mybatis-pagehelper.version>
@@ -36,7 +37,7 @@
 
         <sharding-jdbc.version>2.0.3</sharding-jdbc.version>
         <druid.version>1.1.16</druid.version>
-        
+
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
     </properties>
@@ -77,8 +78,19 @@
             <groupId>io.shardingjdbc</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
             <version>${sharding-jdbc.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
