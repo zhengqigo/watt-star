@@ -2,6 +2,8 @@ package org.fuelteam.watt.star.config;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServlet;
+
 import org.fuelteam.watt.star.properties.DruidStatProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -33,9 +35,8 @@ public class DruidStatAutoConfiguration {
     }
 
     @Bean
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ServletRegistrationBean servletRegistration(DruidStatProperties druidStatProperties) {
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet());
+    public ServletRegistrationBean<HttpServlet> servletRegistration(DruidStatProperties druidStatProperties) {
+        ServletRegistrationBean<HttpServlet> servletRegistrationBean = new ServletRegistrationBean<HttpServlet>(new StatViewServlet());
         servletRegistrationBean.setAsyncSupported(true);
         servletRegistrationBean.setEnabled(true);
         servletRegistrationBean.addUrlMappings("/druid/*");
@@ -44,9 +45,8 @@ public class DruidStatAutoConfiguration {
     }
 
     @Bean
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public FilterRegistrationBean filterRegistration(DruidStatProperties druidStatProperties) {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
+    public FilterRegistrationBean<javax.servlet.Filter> filterRegistration(DruidStatProperties druidStatProperties) {
+        FilterRegistrationBean<javax.servlet.Filter> filterRegistrationBean = new FilterRegistrationBean<javax.servlet.Filter>(new WebStatFilter());
         filterRegistrationBean.setAsyncSupported(true);
         filterRegistrationBean.setEnabled(true);
         filterRegistrationBean.addUrlPatterns(druidStatProperties.getFilterUrlPatterns());

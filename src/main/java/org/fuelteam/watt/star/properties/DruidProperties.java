@@ -16,8 +16,10 @@ public class DruidProperties {
 
     private String name;
 
+    // 应用连接池名称
     private String refName;
 
+    // 数据库名称
     private String dbName;
     
     private String url;
