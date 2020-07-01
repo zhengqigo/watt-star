@@ -33,7 +33,7 @@
         <mybatis-spring.version>2.0.1</mybatis-spring.version>
         <mybatis-pagehelper.version>5.1.8</mybatis-pagehelper.version>
         <mybatis-mapper.version>4.1.5</mybatis-mapper.version>
-        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
 
         <sharding-jdbc.version>2.0.3</sharding-jdbc.version>
         <druid.version>1.1.16</druid.version>
